@@ -1,0 +1,61 @@
+# Progress
+Read SKILL.md first, then this file.
+
+## Scope
+App: Manga AI. Helps write and translate manga (translation target: Thai). Stack: Capacitor.
+App id: com.example.mangaai
+Platforms: Android (iOS: no)
+Look: hue 285 (violet), sat 1, soft, follows the phone mode (light and dark)
+Screens: Write, Story, Panels, Translate, Settings
+Not in scope: fetching manga pages by title (needs copyrighted pages from unauthorized sites, and the app has no search server). The user attaches an image or takes a screenshot, and the AI translates over it.
+Build order: 5, 1, 2, 3, 4 (features 1 and 2 need the key from 5).
+Features and "Done when":
+1. Write: pick the role Editor, send a draft, and a critique comes back. Pick the role Screenwriter, send the same text, and a storyline comes back.
+2. Story: add the character "Ren", close the app and open it again, Ren is still there, and an AI answer uses the name Ren.
+3. Panels: add a panel, pick an image from the device, add or generate dialogue, and the image and the dialogue show together and are still there after reopening the app.
+4. Translate: pick a manga page image, tap translate, the original text is covered and Thai text is drawn over the original position.
+5. Settings: paste an OpenRouter key and a model name, send a message, and a reply comes back.
+Skeleton "Done when" (Phase 1 and 2): the number goes from 0 to 1 after one tap, and the line "เวอร์ชัน 1.0 (1)" shows on the screen.
+
+## Security
+Backend: none. No accounts, no login, no Supabase. All data stays on the device.
+Tables and buckets: none.
+Secret: the user's own OpenRouter key and model name, typed by the user in Settings, stored on the phone only. Never in the repo, never in the app files, never in PROGRESS.md. The key field is type=password.
+Network: Content Security Policy connect-src allows only 'self' and https://openrouter.ai. Never use *.
+Images (Panels, Translate): stored on the device in IndexedDB, not localStorage (size limit).
+Backup: android:allowBackup="false" is set by build.yml on every build.
+Checks: scripts/check-security.sh, gitleaks (v8.30.1) and osv-scanner (v2.6.0) in security.yml, all non-blocking until Phase 4. The access test does not apply (no database).
+Known risks: a debug APK lets someone with the phone and a cable read the app's private data, including the saved key. Images and text are sent to the model provider (OpenRouter and the model behind it). Some free models may keep the data.
+
+## Status
+Phase: 1 (skeleton pushed by mangaai-phase1.sh)
+Last run: not checked yet
+Done: project files, signing key secret, build.yml, security.yml, PROGRESS.md
+Next: Phase 2, watch the first build, install the APK, test the skeleton
+
+## Handoff
+Last worked by: Claude, 2026-10-12
+Changed: all files (new repo)
+Not tested: the first build, the APK on the phone, the Content Security Policy inside Capacitor, the safe-area insets, the gitleaks and osv-scanner steps, the allowBackup step
+
+## File tree (current)
+- .github/workflows/build.yml: builds the debug APK (Capacitor template, plus the allowBackup step)
+- .github/workflows/security.yml: pattern checks, gitleaks, osv-scanner (non-blocking)
+- scripts/check-security.sh: pattern checks from security.md
+- .gitignore: node_modules, keystores, build folders
+- package.json: Capacitor 8 dependencies
+- capacitor.config.json: app id and name
+- www/index.html: skeleton screen, Content Security Policy, error box
+- www/style.css: tokens, theme generator (hue 285), components
+- www/app.js: skeleton counter and the version line (APP_VERSION)
+- SKILL.md: copy of apk.md
+- PROGRESS.md: this file
+
+## Known bugs
+- (none)
+
+## Versions
+- App version: 1.0 (1). It lives in www/app.js (APP_VERSION) and, after the first build, in android/app/build.gradle (versionCode, versionName)
+- Node 22, Java 21 (Temurin), Capacitor ^8.0.0
+- actions/checkout@v6, actions/setup-java@v6, actions/setup-node@v7, actions/upload-artifact@v7
+- gitleaks v8.30.1, osv-scanner v2.6.0

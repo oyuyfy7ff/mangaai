@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://openrouter.ai">
+  <title>Manga AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="appbar"><h1>มังงะ AI</h1></header>
+  <main>
+    <h1 id="count">0</h1>
+    <button id="btn" type="button">เพิ่ม</button>
+    <p class="muted small" id="ver"></p>
+    <pre id="err"></pre>
+  </main>
+  <script>
+    window.addEventListener("error", function (e) {
+      document.getElementById("err").textContent += e.message + " (" + e.filename + ":" + e.lineno + ")\n";
+    });
+    window.addEventListener("unhandledrejection", function (e) {
+      document.getElementById("err").textContent += "Promise: " + e.reason + "\n";
+    });
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
