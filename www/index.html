@@ -8,8 +8,24 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="appbar"><h1>ตั้งค่า</h1></header>
-  <main class="screen">
+  <header class="appbar"><h1 id="title">เขียน</h1></header>
+
+  <main class="screen" id="screen-write">
+    <div class="tabs" id="role-tabs" role="tablist">
+      <button type="button" role="tab" data-role="editor" aria-selected="true">บรรณาธิการ</button>
+      <button type="button" role="tab" data-role="screenwriter" aria-selected="false">นักเขียนบท</button>
+    </div>
+    <div class="field">
+      <label for="w-draft">ร่างของคุณ</label>
+      <textarea id="w-draft" rows="8" placeholder="วางร่างเรื่อง ฉาก หรือบทพูดที่นี่"></textarea>
+      <p class="error" id="w-err" hidden></p>
+    </div>
+    <button type="button" class="block" id="w-send">ส่ง</button>
+    <p class="muted small" id="w-busy" hidden>กำลังรอคำตอบ</p>
+    <div class="chat" id="w-out"></div>
+  </main>
+
+  <main class="screen" id="screen-settings" hidden>
     <div class="field">
       <label for="key">คีย์ OpenRouter</label>
       <input id="key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -33,8 +49,15 @@
     <div class="chat" id="chat"></div>
 
     <p class="muted small" id="ver"></p>
-    <pre id="err"></pre>
   </main>
+
+  <pre id="err"></pre>
+
+  <nav class="nav" id="nav">
+    <button type="button" data-screen="write" aria-current="page">เขียน</button>
+    <button type="button" data-screen="settings">ตั้งค่า</button>
+  </nav>
+
   <script>
     window.addEventListener("error", function (e) {
       document.getElementById("err").textContent += e.message + " (" + e.filename + ":" + e.lineno + ")\n";
@@ -45,5 +68,7 @@
   </script>
   <script src="app.js"></script>
   <script src="settings.js"></script>
+  <script src="write.js"></script>
+  <script src="nav.js"></script>
 </body>
 </html>

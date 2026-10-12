@@ -374,3 +374,6 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--main); outl
 
 /* chat bubble keeps line breaks and wraps long words (Settings test reply) */
 .bubble { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* a screen with display:flex ignores the hidden attribute unless this rule exists */
+.screen[hidden] { display: none; }
