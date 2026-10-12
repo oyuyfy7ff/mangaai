@@ -1,0 +1,2 @@
+# Lessons
+- 2026-10-12: mangaai-phase1.sh used set -e. Right after the first push, GitHub answered HTTP 404 (build.yml not registered yet) to the run lookup, and set -e stopped the script before the wait loop could retry. Fix: put set +e before the Auto-download lines in any script that uses set -e. The first build was then watched by running the Auto-download block by hand. The stub test had missed it because the stub never failed: test the wait loop with a stub that fails a few times first.

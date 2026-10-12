@@ -372,6 +372,5 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--main); outl
 /* development error box (remove at release) */
 #err { color: var(--danger); white-space: pre-wrap; text-align: left; font-size: 14px; }
 
-/* skeleton only: remove in Phase 3 */
-main { text-align: center; margin-top: 64px; padding: 16px; }
-h1 { font-size: 64px; }
+/* chat bubble keeps line breaks and wraps long words (Settings test reply) */
+.bubble { white-space: pre-wrap; overflow-wrap: anywhere; }
