@@ -25,20 +25,22 @@ Network: Content Security Policy connect-src allows only 'self' and https://open
 Images (Panels, Translate): stored on the device in IndexedDB, not localStorage (size limit).
 Backup: android:allowBackup="false" is set by build.yml on every build.
 Checks: scripts/check-security.sh, gitleaks (v8.30.1) and osv-scanner (v2.6.0) in security.yml, all non-blocking until Phase 4. The access test does not apply (no database).
-Known risks: the Write draft is kept on the phone (localStorage) and sent to the model provider like every other text. A debug APK lets someone with the phone and a cable read the app's private data, including the saved key. Images and text are sent to the model provider (OpenRouter and the model behind it). Some free models may keep the data.
+Known risks: the Write draft, the characters and the Panels pictures and dialogue are kept on the phone (localStorage and IndexedDB), and the text, pictures and manga pages you use with the AI are sent to the model provider like every other text. A debug APK lets someone with the phone and a cable read the app's private data, including the saved key. Images and text are sent to the model provider (OpenRouter and the model behind it). Some free models may keep the data.
 
 ## Status
-Phase: 3 (features). Feature 1 (Write) is version 1.2 (3), pushed, waiting for the build and the user's test. Feature 5 (Settings) is version 1.1 (2), still waiting for the user's phone test.
-Last run: not checked yet
-Done: skeleton (confirmed), Settings code, Write code, and their browser tests with a mocked OpenRouter
-Next: the user tests Settings, then Write (Write needs the key from Settings). Then feature 2 (Story), then 3, 4.
+Phase: 3 (features). All five features are written. Version 1.3 (4) is pushed by features-1.3.0.sh and waits for its build and the user's phone test. APK 1.2 (3) built green on 2026-10-12 (run 38245034851); the user has not reported the result of testing Settings and Write on the phone yet.
+Last run: 38245034851 - success (version 1.2 (3)). The run for 1.3 (4) is not checked yet.
+Done: skeleton (confirmed). Written and tested in desktop Chromium with a mocked OpenRouter, not yet confirmed by the user: Settings, Write, Story, Panels, Translate.
+Next: the user installs 1.3 (4) and tests each "Done when" line, starting with Settings (the key), then Write, Story, Panels, Translate. Then Phase 4 (fix and polish: icons, app icon, blocking checks).
 
 ## Handoff
-Last worked by: Claude, 2026-10-12
-Changed: www/index.html (bottom navigation, Write screen, Settings moved into its own screen), www/write.js (new), www/nav.js (new), www/app.js (version line only), www/style.css (.screen[hidden] rule appended), android/app/build.gradle (versionCode 3, versionName 1.2), LESSONS.md, PROGRESS.md. www/settings.js is unchanged: write.js reuses its helpers and constants, so settings.js must load first.
-Not tested: the real call to openrouter.ai from the phone (browser CORS from the app origin is the main risk: if the send fails with "ส่งไม่ได้" while the internet works, enable the CapacitorHttp plugin in capacitor.config.json), the keyboard covering the draft field, the safe-area insets and the bottom navigation on a real phone, the quality of the Thai critique and storyline with the user's chosen model
-Tested in desktop Chromium (390 px wide, light and dark) with a mocked OpenRouter: Editor and Screenwriter send the same draft with different system prompts, replies shown as plain text (<b>x</b> stays text), draft and role survive a reload, errors (no key, empty, too long, 401, network), Settings still works, no horizontal scroll, no page errors
-recipes.md (chat with an AI service) was not attached in this session: the call in write.js copies the one already in settings.js, nothing new was invented. Attach recipes.md before feature 2 (Story).
+Last worked by: Claude, 2026-10-13
+Changed: www/story.js, www/panels.js, www/translate.js, www/media.js, www/ui.js (all new), www/index.html (Story, Panels, Translate screens, confirm sheet, five navigation items), www/nav.js (five screens), www/app.js (version line only), www/style.css (.stack, .panel-img, .canvas-view appended), android/app/build.gradle (versionCode 4, versionName 1.3), LESSONS.md, PROGRESS.md. settings.js and write.js are unchanged: the new files reuse their helpers and askModel, so the load order in index.html matters (settings, write, ui, media, story, panels, translate, nav).
+How the features work: Story keeps characters in localStorage and sends the list as part of the system message, so answers use the names. Panels keeps each picture (scaled to 1280 px JPEG) and its dialogue in IndexedDB, saves dialogue 0.4 s after typing, and can ask the model for dialogue from the picture. Translate scales the page to 1280 px, asks the model for JSON [{box:[left,top,right,bottom] in 0..1000, text}], covers each box with the page colour sampled just outside it and draws the Thai text fitted to the box. The result is shown on screen only (no save button): take a screenshot to keep it.
+Not tested: everything on a real phone: the real call to openrouter.ai (if the send fails with "ส่งไม่ได้" while the internet works, enable CapacitorHttp in capacitor.config.json), the file picker (gallery) in the app, IndexedDB inside the app, keyboard covering fields, safe-area insets, the five-item navigation on a small screen. Translate depends on the model: it must read pictures and return reasonably accurate boxes; free models often do not, so boxes can be off. Use the same model for the first test and write down which one worked.
+Tested in desktop Chromium (390 px wide, light and dark) with a mocked OpenRouter, 56 checks for the new features and 33 for Write and Settings, repeated runs all green: navigation, characters (add, duplicate, delete with confirmation, survive reload, names reach the model), panels (add, reload, generate, delete, big picture scaled, non-image refused), translate (box parsing, invalid boxes dropped, cover colour, Thai text inside the box, run twice gives the same result, bad reply and errors, original restored), no horizontal scroll, no page errors.
+recipes.md was still not attached: the model call is the one from settings.js, extended only by passing a list as the user message (text plus image_url) to the same request. Attach recipes.md before Phase 4 if the user wants movable pieces or a different chat.
+The user asked for all remaining features at once (Golden rule 11): the one-feature-at-a-time loop was skipped. If one screen misbehaves, test it alone: each feature has its own file and screen.
 
 ## File tree (current)
 - .github/workflows/build.yml: builds the debug APK (Capacitor template, plus the allowBackup step)
@@ -48,10 +50,15 @@ recipes.md (chat with an AI service) was not attached in this session: the call 
 - package.json: Capacitor 8 dependencies
 - capacitor.config.json: app id and name
 - android/: generated by the first build and committed by the workflow
-- www/index.html: Write and Settings screens, bottom navigation, Content Security Policy, error box
-- www/style.css: tokens, theme generator (hue 285), components, the .bubble rule (reply keeps line breaks) and the .screen[hidden] rule
+- www/index.html: five screens (Write, Story, Panels, Translate, Settings), confirm sheet, bottom navigation, Content Security Policy, error box
+- www/style.css: tokens, theme generator (hue 285), components, the .bubble rule (reply keeps line breaks), the .screen[hidden] rule, and .stack, .panel-img, .canvas-view
 - www/app.js: the version line (APP_VERSION)
-- www/nav.js: bottom navigation (SCREEN_TITLES, showScreen)
+- www/nav.js: bottom navigation, five screens (SCREEN_TITLES, showScreen)
+- www/ui.js: confirmSheet (dialog for deleting)
+- www/media.js: picture helpers (scale to 1280 px JPEG, data URL) and the IndexedDB store for Panels
+- www/story.js: Story feature (characters in localStorage, ask the AI with the names)
+- www/panels.js: Panels feature (pictures and dialogue in IndexedDB, AI dialogue from the picture)
+- www/translate.js: Translate feature (model returns boxes, canvas covers and draws Thai)
 - www/write.js: Write feature (role tabs, draft, Editor critique, Screenwriter storyline); needs settings.js loaded first
 - www/settings.js: Settings feature (storage, save, test message to OpenRouter)
 - LESSONS.md: unexpected things and their fixes
@@ -59,10 +66,14 @@ recipes.md (chat with an AI service) was not attached in this session: the call 
 - PROGRESS.md: this file
 
 ## Known bugs
-- (none)
+- (none confirmed by the user yet)
+
+## Known issues (not bugs in the app)
+- security.yml: the osv-scanner step prints "No package sources found" (exit 128) because the repo has no package-lock.json. It is non-blocking now. Fix before Phase 4 (for example commit a package-lock.json), or the step will block the build.
+- GitHub says ubuntu-latest moves to Ubuntu 26 from 2026-10-19. Watch the first build after that date; if it fails, pin the runner version.
 
 ## Versions
-- App version: 1.1 (2). It lives in www/app.js (APP_VERSION) and in android/app/build.gradle (versionCode, versionName)
+- App version: 1.3 (4). It lives in www/app.js (APP_VERSION) and in android/app/build.gradle (versionCode, versionName)
 - Node 22, Java 21 (Temurin), Capacitor ^8.0.0
 - actions/checkout@v6, actions/setup-java@v6, actions/setup-node@v7, actions/upload-artifact@v7
 - gitleaks v8.30.1, osv-scanner v2.6.0

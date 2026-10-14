@@ -25,6 +25,50 @@
     <div class="chat" id="w-out"></div>
   </main>
 
+  <main class="screen" id="screen-story" hidden>
+    <div class="field">
+      <label for="st-name">ชื่อตัวละคร</label>
+      <input id="st-name" type="text" maxlength="50" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="st-desc">รายละเอียด (ไม่บังคับ)</label>
+      <textarea id="st-desc" rows="2" maxlength="500"></textarea>
+      <p class="error" id="st-err" hidden></p>
+    </div>
+    <button type="button" class="block" id="st-add">เพิ่มตัวละคร</button>
+    <ul class="list" id="st-list"></ul>
+    <p class="empty" id="st-empty">ยังไม่มีตัวละคร</p>
+
+    <div class="field">
+      <label for="st-q">ถาม AI เกี่ยวกับเรื่อง</label>
+      <textarea id="st-q" rows="3"></textarea>
+      <p class="error" id="st-q-err" hidden></p>
+    </div>
+    <button type="button" class="block soft" id="st-ask">ถาม</button>
+    <p class="muted small" id="st-busy" hidden>กำลังรอคำตอบ</p>
+    <div class="chat" id="st-out"></div>
+  </main>
+
+  <main class="screen" id="screen-panels" hidden>
+    <button type="button" class="block" id="pn-add">เพิ่มช่อง (เลือกรูป)</button>
+    <input type="file" accept="image/*" id="pn-file" hidden>
+    <p class="error" id="pn-err" hidden></p>
+    <p class="muted small" id="pn-busy" hidden>กำลังทำงาน</p>
+    <div class="list" id="pn-list"></div>
+    <p class="empty" id="pn-empty">ยังไม่มีช่อง</p>
+  </main>
+
+  <main class="screen" id="screen-translate" hidden>
+    <p class="muted small">เลือกรูปหน้ามังงะแล้วกดแปล ต้องใช้โมเดลที่อ่านรูปได้ รูปจะถูกส่งไปที่ผู้ให้บริการโมเดล</p>
+    <button type="button" class="block soft" id="tr-pick">เลือกรูปหน้ามังงะ</button>
+    <input type="file" accept="image/*" id="tr-file" hidden>
+    <canvas id="tr-canvas" class="canvas-view" hidden></canvas>
+    <button type="button" class="block" id="tr-go" disabled>แปลเป็นภาษาไทย</button>
+    <p class="error" id="tr-err" hidden></p>
+    <p class="muted small" id="tr-busy" hidden>กำลังอ่านและแปล อาจใช้เวลาครู่หนึ่ง</p>
+    <p class="muted small" id="tr-done" hidden></p>
+  </main>
+
   <main class="screen" id="screen-settings" hidden>
     <div class="field">
       <label for="key">คีย์ OpenRouter</label>
@@ -51,10 +95,22 @@
     <p class="muted small" id="ver"></p>
   </main>
 
+  <div class="scrim" id="confirm" hidden>
+    <div class="sheet">
+      <h2 id="confirm-title"></h2>
+      <p class="muted" id="confirm-text"></p>
+      <button type="button" class="danger block" id="confirm-yes">ลบ</button>
+      <button type="button" class="soft block" id="confirm-no">ยกเลิก</button>
+    </div>
+  </div>
+
   <pre id="err"></pre>
 
   <nav class="nav" id="nav">
     <button type="button" data-screen="write" aria-current="page">เขียน</button>
+    <button type="button" data-screen="story">เรื่อง</button>
+    <button type="button" data-screen="panels">ช่อง</button>
+    <button type="button" data-screen="translate">แปล</button>
     <button type="button" data-screen="settings">ตั้งค่า</button>
   </nav>
 
@@ -69,6 +125,11 @@
   <script src="app.js"></script>
   <script src="settings.js"></script>
   <script src="write.js"></script>
+  <script src="ui.js"></script>
+  <script src="media.js"></script>
+  <script src="story.js"></script>
+  <script src="panels.js"></script>
+  <script src="translate.js"></script>
   <script src="nav.js"></script>
 </body>
 </html>

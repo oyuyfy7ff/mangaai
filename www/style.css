@@ -377,3 +377,8 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--main); outl
 
 /* a screen with display:flex ignores the hidden attribute unless this rule exists */
 .screen[hidden] { display: none; }
+
+/* Panels cards and the Translate canvas */
+.stack { display: flex; flex-direction: column; gap: var(--s3); }
+.panel-img, .canvas-view { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); background: var(--surface2); }
+.canvas-view[hidden] { display: none; }

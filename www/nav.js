@@ -1,5 +1,12 @@
-// Bottom navigation: show one screen at a time. Add a screen by adding its id and title here.
-const SCREEN_TITLES = { write: "เขียน", settings: "ตั้งค่า" };
+// Bottom navigation: show one screen at a time. Add a screen by adding its id and title here
+// and a button with the same data-screen in index.html.
+const SCREEN_TITLES = {
+  write: "เขียน",
+  story: "เรื่องและตัวละคร",
+  panels: "ช่องมังงะ",
+  translate: "แปลหน้ามังงะ",
+  settings: "ตั้งค่า"
+};
 
 function showScreen(name) {
   if (!SCREEN_TITLES[name]) name = "write";
